@@ -309,6 +309,18 @@
     object-fit:cover; object-position:top;
     transition:transform .5s ease;
   }
+  .p-f { background:linear-gradient(160deg,#a33 0%,#5c1111 55%,#1a0505 100%); }
+  .p-art {
+    position:absolute; inset:0; z-index:0;
+    display:flex; align-items:center; justify-content:center;
+    opacity:.5; transition:opacity .4s, transform .5s;
+  }
+  .poster:hover .p-art { opacity:.95; transform:scale(1.15); }
+  .p-f::before {
+    content:""; position:absolute; inset:15% 22%;
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(255,255,255,.14), transparent 70%);
+  }
   .poster:hover {
     transform:translateY(-8px) rotate(-1.2deg) scale(1.04);
     box-shadow:0 18px 40px rgba(0,0,0,.55);
@@ -891,6 +903,10 @@
     <a class="poster" href="https://www.imdb.com/title/tt8993398/" target="_blank" rel="noopener" title="Bunny Girl Senpai — ver en IMDb">
       <img src="https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx101291-wfEdgPqtfU0l.jpg" alt="Bunny Girl Senpai">
       <div class="p-info"><h4>Bunny Girl Senpai</h4><small>IMDb ↗</small></div>
+    </a>
+    <a class="poster p-f" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener" title="Overflow — ver en YouTube">
+      <span class="p-art"><svg class="ic" style="width:2.4rem;height:2.4rem;stroke-width:1.4;color:#fff"><use href="#i-play"/></svg></span>
+      <div class="p-info"><h4>Overflow</h4><small>YouTube ↗</small></div>
     </a>
   </div>
 
