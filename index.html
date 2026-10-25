@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Una memoria de mí — biografía</title>
+<style>
+  :root {
+    --bg: #07070a;
+    --panel: #101016;
+    --panel-2: #16161e;
+    --txt: #e8e6e1;
+    --dim: #9a97a0;
+    --accent: #7c9eb2;
+    --accent2: #c2a878;
+    --line: #232330;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--txt);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  .mono { font-family: 'Cascadia Code', 'JetBrains Mono', Consolas, monospace; }
+
+  /* ===== BARRA DE PROGRESO ===== */
+  #progreso {
+    position: fixed; top: 0; left: 0;
+    height: 3px; width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    box-shadow: 0 0 10px rgba(124,158,178,.7);
+    z-index: 200;
+    transition: width .1s linear;
+  }
+
+  /* ===== FONDO ===== */
+  #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+  .glow {
+    position: fixed; border-radius: 50%;
+    filter: blur(110px); z-index: 0; pointer-events: none;
+    opacity: .16;
+    animation: drift 22s ease-in-out infinite alternate;
+  }
+  .glow.g1 { width: 480px; height: 480px; background: var(--accent);  top: -140px; left: -120px; }
+  .glow.g2 { width: 420px; height: 420px; background: var(--accent2); top: 34%; right: -160px; animation-delay: -8s; }
+  .glow.g3 { width: 380px; height: 380px; background: #6f7ca8; bottom: -120px; left: 18%; animation-delay: -14s; }
+
+  @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(60px,40px) scale(1.15); } }
+
+  /* ===== ICONOS ===== */
+  .ic {
+    width: 1em; height: 1em;
+    vertical-align: -.12em;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(7,7,10,.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+    display: flex; justify-content: space-between; align-items: center;
+    padding: .9rem 2rem;
+  }
+  nav .brand { color: var(--accent); font-size: .9rem; }
+  nav .brand b { color: var(--txt); }
+  nav ul { list-style: none; display: flex; gap: 1.4rem; font-size: .85rem; }
+  nav a { color: var(--dim); text-decoration: none; position: relative; transition: color .3s; display: inline-flex; gap: .4rem; align-items: center; }
+  nav a::after { content:""; position:absolute; left:0; bottom:-4px; width:0; height:1px; background:var(--accent); transition:width .35s; }
+  nav a:hover { color: var(--accent); }
+  nav a:hover::after { width:100%; }
+
+  /* ===== HERO ===== */
+  .hero { position:relative; max-width:760px; margin:0 auto; padding:6rem 1.5rem 3rem; z-index:1; }
+  .hero h1 {
+    font-size: clamp(2rem, 6vw, 3.6rem);
+    font-weight: 300; letter-spacing: -.5px; margin: 1.2rem 0;
+    opacity:0; animation: fadeUp .9s ease .3s forwards;
+  }
+  .hero h1 b {
+    font-weight:600;
+    background: linear-gradient(90deg, var(--accent), #b7cfe0, var(--accent2), var(--accent));
+    background-size:300% 100%;
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation: grad 8s linear infinite;
+  }
+  @keyframes grad { to { background-position:300% 0; } }
+
+  .hero .cur {
+    display:inline-block; width:12px; height:2.6rem;
+    background:var(--accent); vertical-align:text-bottom; margin-left:.3rem;
+    box-shadow:0 0 12px var(--accent);
+    animation: blink 1.1s step-end infinite;
+  }
+  @keyframes blink { 50% { opacity:0; } }
+  @keyframes fadeUp { from{opacity:0; transform:translateY(24px);} to{opacity:1; transform:none;} }
+
+  .hero p.sub {
+    color:var(--dim); font-size:1.05rem; max-width:540px; font-style:italic;
+    opacity:0; animation: fadeUp .9s ease .55s forwards;
+  }
+
+  /* ===== TERMINAL TYPEWRITER ===== */
+  .terminal {
+    background:#0b0b11;
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow:hidden;
+    margin-bottom:0;
+    opacity:0; animation: fadeUp .8s ease forwards;
+    transition: box-shadow .4s, border-color .4s;
+  }
+  .terminal:hover {
+    border-color: rgba(124,158,178,.5);
+    box-shadow: 0 14px 40px rgba(124,158,178,.12);
+  }
+  .t-bar {
+    display:flex; align-items:center; gap:.4rem;
+    padding:.6rem .9rem;
+    background:var(--panel-2);
+    border-bottom:1px solid var(--line);
+  }
+  .t-dot {
+    width:11px; height:11px; border-radius:50%;
+  }
+  .t-dot.r{ background:#ff5f57; } .t-dot.y{ background:#febc2e; } .t-dot.g{ background:#28c840; }
+  .t-title { margin:0 auto; font-size:.75rem; color:var(--dim); }
+  .t-body {
+    padding:1.1rem 1.2rem;
+    font-size:.88rem; line-height:1.9;
+    min-height:15.2rem;
+    white-space: pre-wrap;
+  }
+  .t-body .cmd { color: var(--accent); }
+  .t-body .out { color: var(--txt); }
+  .t-body .ok  { color: #7fbf7f; }
+  .t-careta {
+    display:inline-block; width:8px; height:1.05em;
+    background:var(--accent); vertical-align:text-bottom;
+    animation: blink 1s step-end infinite;
+    margin-left:2px;
+  }
+
+  .hero .scroll-hint {
+    margin: 2.2rem auto 0; text-align:center;
+    color:var(--dim); font-size:.8rem;
+    opacity:0; animation: fadeUp 1s ease 1s forwards;
+  }
+  .hero .scroll-hint .arrow { display:block; margin-top:.3rem; color:var(--accent); animation: bob 1.8s ease-in-out infinite; }
+  @keyframes bob { 0%,100%{transform:translateY(0);} 50%{transform:translateY(7px);} }
+
+  /* ===== REVEAL ===== */
+  .reveal {
+    opacity:0; transform:translateY(34px);
+    transition: opacity .8s cubic-bezier(.2,.7,.3,1), transform .8s cubic-bezier(.2,.7,.3,1);
+    will-change: opacity, transform;
+  }
+  .reveal.visible { opacity:1; transform:none; }
+
+  /* ===== SECCIONES ===== */
+  section {
+    position:relative; max-width:760px; margin:0 auto;
+    padding:3rem 1.5rem; scroll-margin-top:70px; z-index:1;
+  }
+  section + section::before {
+    content:""; display:block; height:1px; margin-bottom:3rem;
+    background: linear-gradient(90deg, transparent, var(--line) 30%, var(--accent) 50%, var(--line) 70%, transparent);
+    opacity:.55;
+  }
+  .kicker {
+    color:var(--accent2); font-size:.75rem; letter-spacing:3px;
+    text-transform:uppercase; margin-bottom:.4rem;
+    display:flex; align-items:center; gap:.55rem;
+  }
+  .kicker .ic { width:1.05rem; height:1.05rem; }
+  h2 { font-size:1.7rem; font-weight:600; margin-bottom:1.2rem; transition:color .3s; }
+  section:hover h2 { color:#fff; }
+  section p { color:#cfcdd4; margin-bottom:1rem; }
+  section p.hero-line { color:var(--dim); }
+
+  .card {
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:1.25rem 1.4rem; margin:1rem 0;
+    transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+    box-shadow: 0 12px 34px rgba(124,158,178,.10);
+  }
+
+  /* ===== STATS ===== */
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.8rem; margin:1.5rem 0; }
+  .stat {
+    background:var(--panel); border:1px solid var(--line); border-radius:12px;
+    padding:1.2rem 1rem; text-align:center; cursor:default;
+    transition: transform .35s ease, border-color .35s ease;
+  }
+  .stat:hover { transform:translateY(-5px); border-color:var(--accent); }
+  .stat .n {
+    font-size:1.7rem; font-weight:600; color:var(--accent);
+    text-shadow:0 0 18px rgba(124,158,178,.35);
+  }
+  .stat .l { font-size:.8rem; color:var(--dim); }
+
+  /* ===== FASTFETCH ===== */
+  .fetch {
+    display:grid; grid-template-columns:auto 1fr; gap:1.2rem;
+    align-items:center;
+  }
+  .fetch pre {
+    font-size:.72rem; line-height:1.25; color:var(--accent);
+    text-shadow:0 0 14px rgba(124,158,178,.4);
+    user-select:none;
+  }
+  .fetch-rows { font-size:.86rem; }
+  .fetch-rows div { padding:.18rem 0; opacity:0; transform:translateX(10px); transition:opacity .5s, transform .5s; }
+  .fetch.visible-v .fetch-rows div { opacity:1; transform:none; }
+  .fetch-rows .fk { color:var(--accent2); }
+
+  /* ===== TIMELINE expandible ===== */
+  .timeline { position:relative; margin:1.5rem 0 0 .4rem; padding-left:1.4rem; border-left:1px solid var(--line); }
+  .tl-item { position:relative; }
+  .tl-item::before {
+    content:""; position:absolute; left:-1.85rem; top:.75rem;
+    width:9px; height:9px; border-radius:50%;
+    background:var(--accent); box-shadow:0 0 8px rgba(124,158,178,.6);
+  }
+  .tl-btn {
+    background:none; border:none; color:inherit; font:inherit; text-align:left;
+    width:100%; cursor:pointer; padding:.45rem 0;
+    display:flex; align-items:baseline; gap:.6rem;
+  }
+  .tl-btn:hover .os { color:#fff; }
+  .tl-item .os { color:var(--accent); font-weight:600; transition:color .3s; }
+  .tl-item .rs { color:var(--dim); font-size:.85rem; }
+  .tl-item .chev { margin-left:auto; color:var(--dim); transition:transform .35s; font-size:.8rem; }
+  .tl-item.abierto .chev { transform:rotate(90deg); color:var(--accent); }
+  .tl-extra {
+    max-height:0; overflow:hidden;
+    transition:max-height .45s ease, padding .45s ease;
+    color:#cfcdd4; font-size:.9rem;
+  }
+  .tl-item.abierto .tl-extra { max-height:120px; padding-bottom:.9rem; }
+
+  /* ===== SPECS ===== */
+  .specs { width:100%; border-collapse:collapse; font-size:.9rem; }
+  .specs td { padding:.5rem .3rem; border-bottom:1px solid var(--line); transition:background .3s; }
+  .specs tr:hover td { background:rgba(124,158,178,.05); }
+  .specs td:first-child { color:var(--dim); width:40%; }
+  .specs .spec-ic { color:var(--accent); margin-right:.45rem; }
+  .specs tr:last-child td { border-bottom:none; }
+
+  /* ===== EQ VISUALIZER ===== */
+  .eq-card { position:relative; overflow:hidden; }
+  .eq-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+  .play-btn {
+    font-family:inherit; font-size:.82rem;
+    background:var(--panel-2); color:var(--txt);
+    border:1px solid var(--line); border-radius:30px;
+    padding:.38rem 1.1rem; cursor:pointer;
+    transition:border-color .3s, color .3s, box-shadow .3s;
+    display:inline-flex; gap:.45rem; align-items:center;
+  }
+  .play-btn:hover { border-color:var(--accent); color:var(--accent); box-shadow:0 0 14px rgba(124,158,178,.2); }
+  .eq {
+    display:flex; align-items:flex-end; gap:3px;
+    height:80px;
+    filter:drop-shadow(0 0 6px rgba(124,158,178,.35));
+  }
+  .eq span {
+    flex:1; min-width:2px; border-radius:3px 3px 0 0;
+    background:linear-gradient(to top, rgba(124,158,178,.25), var(--accent));
+    height:15%;
+    transform-origin:bottom;
+    transform:scaleY(.25);
+    transition:transform .12s ease-out;
+  }
+  .eq.playing span { will-change: transform; }
+
+  /* ===== FAVORITOS / POSTERS ===== */
+  .posters {
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+    gap:.9rem; margin:1.4rem 0;
+  }
+  .poster {
+    position:relative; aspect-ratio:10/14.5;
+    border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; cursor:pointer;
+    text-decoration:none; color:#fff;
+    transition:transform .4s cubic-bezier(.2,.7,.3,1), box-shadow .4s, border-color .4s;
+  }
+  .poster img {
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit:cover; object-position:top;
+    transition:transform .5s ease;
+  }
+  .poster:hover {
+    transform:translateY(-8px) rotate(-1.2deg) scale(1.04);
+    box-shadow:0 18px 40px rgba(0,0,0,.55);
+    border-color:var(--accent);
+    z-index:2;
+  }
+  .poster:hover img { transform:scale(1.09); }
+  .poster::after {
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,.88), transparent 55%);
+    transition:opacity .4s;
+  }
+  .poster:hover::after { opacity:1.2; }
+  .p-info {
+    position:absolute; bottom:0; left:0; right:0; z-index:1;
+    padding:.7rem .8rem .8rem;
+  }
+  .p-info h4 { font-size:.88rem; font-weight:600; text-shadow:0 2px 6px rgba(0,0,0,.8); }
+  .p-info small { color:rgba(255,255,255,.72); font-size:.7rem; letter-spacing:.4px; transition:color .3s; }
+  .poster:hover .p-info small { color:var(--accent2); }
+
+  /* ===== CHIPS ===== */
+  .chips { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:1rem; }
+  .chip {
+    background:var(--panel-2); border:1px solid var(--line); color:var(--txt);
+    font-size:.8rem; padding:.3rem .85rem; border-radius:30px; cursor:default;
+    display:inline-flex; gap:.4rem; align-items:center;
+    transition:transform .3s, border-color .3s, color .3s, box-shadow .3s;
+  }
+  .chip:hover { transform:translateY(-3px); border-color:var(--accent); color:var(--accent); box-shadow:0 6px 16px rgba(124,158,178,.15); }
+  .chip .ic { width:.85rem; height:.85rem; color:var(--accent2); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    position:relative; border-top:1px solid var(--line);
+    text-align:center; padding:2.5rem 1rem 3rem;
+    color:var(--dim); font-size:.85rem; z-index:1;
+  }
+  footer .mono { color:var(--accent); }
+
+  @media (max-width:600px) {
+    nav ul { display:none; }
+    .fetch { grid-template-columns:1fr; }
+    .fetch pre { display:none; }
+  }
+
+  /* ===== MÓVIL ===== */
+  @media (max-width: 640px) {
+    nav { padding: .7rem 1rem; }
+    nav .brand { font-size: .8rem; }
+
+    .hero { padding: 3.2rem 1.1rem 2.2rem; }
+    .hero h1 { font-size: clamp(1.7rem, 8.5vw, 2.4rem); }
+    .hero h1 .cur { height: 1.7rem; width: 9px; }
+    .hero p.sub { font-size: .95rem; }
+    .hero .scroll-hint { display: none; }
+
+    .terminal { margin: 0 .2rem; }
+    .t-body { font-size: .74rem; line-height: 1.75; padding: .9rem .85rem; min-height: 0; }
+
+    section { padding: 2.2rem 1.1rem; scroll-margin-top: 56px; }
+    section + section::before { margin-bottom: 2.2rem; }
+    h2 { font-size: 1.35rem; }
+    section p { font-size: .95rem; }
+
+    .card { padding: 1rem; border-radius: 10px; }
+
+    .stats { grid-template-columns: repeat(2, 1fr); gap: .6rem; margin: 1.1rem 0; }
+    .stat { padding: .9rem .6rem; }
+    .stat .n { font-size: 1.35rem; }
+    .stat .l { font-size: .7rem; }
+
+    .fetch-rows { font-size: .78rem; }
+
+    .tl-btn { flex-wrap: wrap; padding: .35rem 0; }
+    .tl-item .rs { flex-basis: 100%; font-size: .78rem; }
+    .tl-extra { font-size: .84rem; }
+
+    .specs { font-size: .8rem; }
+    .specs td { padding: .42rem .15rem; }
+
+    .eq { height: 58px; gap: 2px; }
+    .eq-head { flex-direction: column; align-items: flex-start; gap: .6rem; }
+
+    .posters { grid-template-columns: repeat(2, 1fr); gap: .7rem; margin: 1.1rem 0; }
+    .poster:hover img { transform: none; }
+    .poster:hover { transform: translateY(-4px); }
+    .p-info h4 { font-size: .8rem; }
+    .p-info small { display: none; }
+    .poster::after { background: linear-gradient(to top, rgba(0,0,0,.85), transparent 45%); }
+
+    .chips { gap: .35rem; }
+    .chip { font-size: .72rem; padding: .25rem .65rem; }
+
+    footer { font-size: .74rem; padding: 2rem 1rem 2.6rem; }
+    footer .mono { word-break: break-all; }
+  }
+
+  /* pantallas táctiles en general: hover solo con puntero real */
+  @media (hover: none) {
+    .card, .stat, .chip { transition: none; }
+    .card:active { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+  }
+
+  /* ===== ANCLAS ===== */
+  .card, .timeline, .stats, .posters, .chips { scroll-margin-top: 84px; }
+
+  /* ===== SUBMENÚS DROPDOWN (desktop) ===== */
+  nav .topnav { list-style:none; display:flex; gap:1.1rem; font-size:.85rem; }
+  nav .topnav > li { position:relative; }
+  .dd {
+    list-style:none;
+    position:absolute; top:calc(100% + 10px); left:50%;
+    transform:translateX(-50%) translateY(8px);
+    min-width:190px;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:.4rem;
+    opacity:0; visibility:hidden;
+    transition:opacity .25s ease, transform .25s ease, visibility .25s;
+    z-index:300;
+    box-shadow:0 14px 30px rgba(0,0,0,.4);
+  }
+  nav .topnav > li::before {
+    /* puente invisible para no perder el hover */
+    content:""; position:absolute; top:calc(100% + 4px); left:0; right:0; height:10px;
+  }
+  nav .topnav > li:hover > .dd,
+  nav .topnav > li:focus-within > .dd {
+    opacity:1; visibility:visible;
+    transform:translateX(-50%) translateY(0);
+  }
+  .dd a {
+    display:flex; align-items:center; gap:.5rem;
+    padding:.5rem .8rem; border-radius:8px;
+    color:var(--dim); font-size:.8rem;
+    transition:background .25s, color .25s;
+  }
+  .dd a:hover { background:rgba(124,158,178,.09); color:var(--accent); }
+  .dd a::after { display:none; }
+  .dd li { animation: ddIn .3s ease backwards; }
+  .dd li:nth-child(2) { animation-delay:.05s; }
+  @keyframes ddIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:none; } }
+
+  /* scrollspy */
+  nav a.activo { color:var(--accent); }
+  nav a.activo::after { width:100%; }
+
+  /* ===== BURGER (sólo móvil) ===== */
+  #burger {
+    display:none;
+    background:none; border:none; cursor:pointer;
+    padding:.5rem .3rem;
+    flex-direction:column; gap:5px;
+  }
+  #burger span {
+    width:22px; height:2px; background:var(--txt);
+    border-radius:2px; transition:transform .3s, opacity .3s, width .3s;
+  }
+  #burger.abierto span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  #burger.abierto span:nth-child(2) { opacity:0; width:10px; }
+  #burger.abierto span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+
+  #mmenu {
+    position:fixed; inset:0; z-index:150;
+    background:rgba(7,7,10,.97);
+    display:none; flex-direction:column;
+    padding:3.5rem 2rem; overflow-y:auto;
+  }
+  #mmenu.abierto { display:flex; animation: menuIn .35s ease; }
+  @keyframes menuIn { from { opacity:0; } to { opacity:1; } }
+  #cerrar-menu {
+    align-self:flex-end;
+    background:var(--panel-2); color:var(--dim);
+    border:1px solid var(--line); border-radius:30px;
+    padding:.4rem 1rem; font-size:.8rem; cursor:pointer;
+    transition:color .3s, border-color .3s;
+  }
+  #cerrar-menu:hover { color:var(--accent); border-color:var(--accent); }
+  .mg { margin-top:1.6rem; animation: fadeUp .5s ease backwards; }
+  .mg:nth-child(2) { animation-delay:.05s } .mg:nth-child(3) { animation-delay:.1s }
+  .mg:nth-child(4) { animation-delay:.15s } .mg:nth-child(5) { animation-delay:.2s }
+  .mg:nth-child(6) { animation-delay:.25s }
+  .mg a {
+    display:block;
+    color:var(--txt); text-decoration:none;
+    font-size:1.15rem; padding:.65rem .2rem;
+    border-bottom:1px solid var(--line);
+    transition:padding-left .3s, color .3s;
+  }
+  .mg a:hover { padding-left:.7rem; color:var(--accent); }
+
+  /* ===== BOTÓN SUBIR ===== */
+  #btt {
+    position:fixed; bottom:1.4rem; right:1.4rem; z-index:120;
+    width:44px; height:44px;
+    background:var(--panel-2); color:var(--accent);
+    border:1px solid var(--line); border-radius:50%;
+    font-size:1.1rem; cursor:pointer;
+    opacity:0; visibility:hidden; transform:translateY(10px);
+    transition:opacity .35s, transform .35s, visibility .35s, border-color .3s;
+  }
+  #btt.mostrar { opacity:1; visibility:visible; transform:none; }
+  #btt:hover { border-color:var(--accent); box-shadow:0 0 16px rgba(124,158,178,.25); }
+
+  /* ===== RIPPLE ===== */
+  .ripple-wrap { position:relative; overflow:hidden; }
+  .ripple {
+    position:absolute; border-radius:50%;
+    background:radial-gradient(circle, rgba(124,158,178,.35) 0%, transparent 70%);
+    pointer-events:none;
+    width:12px; height:12px;
+    animation: rip .6s ease-out forwards;
+  }
+  @keyframes rip { to { transform:scale(26); opacity:0; } }
+
+  /* ===== HALO DEL CURSOR (desktop) ===== */
+  #halo {
+    position:fixed; z-index:250;
+    width:34px; height:34px; border-radius:50%;
+    border:1px solid rgba(124,158,178,.5);
+    pointer-events:none;
+    transform:translate(-50%,-50%);
+    transition:width .25s, height .25s, border-color .25s;
+    mix-blend-mode:screen;
+  }
+  #halo.crecer { width:52px; height:52px; border-color:var(--accent2); }
+
+  /* ===== REVEAL POR ELEMENTO (cascada) ===== */
+  .r-item {
+    opacity:0; transform:translateY(20px);
+    transition:opacity .6s cubic-bezier(.2,.7,.3,1), transform .6s cubic-bezier(.2,.7,.3,1);
+  }
+  .r-item.visible { opacity:1; transform:none; }
+
+  @media (max-width: 640px) {
+    .topnav { display:none; }   /* en móvil sólo burger */
+    #burger { display:inline-flex; }
+    #halo { display:none !important; }
+    #btt { width:40px; height:40px; bottom:1.1rem; right:1.1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div id="progreso"></div>
+
+<!-- SPRITE DE ICONOS (feather-style) -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-terminal" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></symbol>
+  <symbol id="i-headphones" viewBox="0 0 24 24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></symbol>
+  <symbol id="i-smartphone" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></symbol>
+  <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M12 3l1.8 4.6L18 9.5l-4.2 1.9L12 16l-1.8-4.6L6 9.5l4.2-1.9L12 3z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15z"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><line x1="8" y1="5" x2="8" y2="19"/><line x1="16" y1="5" x2="16" y2="19"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></symbol>
+  <symbol id="i-harddrive" viewBox="0 0 24 24"><line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/></symbol>
+  <symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0 0 20c1.1 0 2-.9 2-2v-1c0-1.1.9-2 2-2h1a8 8 0 0 0 8-8c0-5.5-5.3-7-11-7z"/><circle cx="7.5" cy="10.5" r="1"/><circle cx="12" cy="7.5" r="1"/><circle cx="16.5" cy="10.5" r="1"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></symbol>
+  <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><line x1="6" y1="10" x2="6" y2="10.01"/><line x1="10" y1="10" x2="10" y2="10.01"/><line x1="14" y1="10" x2="14" y2="10.01"/><line x1="18" y1="10" x2="18" y2="10.01"/><line x1="7" y1="14" x2="17" y2="14"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+  <symbol id="i-command" viewBox="0 0 24 24"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 0 0 0-6z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+</svg>
+
+<button id="btt" aria-label="Volver arriba" class="mono">↑</button>
+<canvas id="particles"></canvas>
+<div class="glow g1"></div>
+<div class="glow g2"></div>
+<div class="glow g3"></div>
+
+<nav>
+  <div class="brand mono">~/.memoria/<b>yo</b></div>
+  <ul class="topnav">
+    <li>
+      <a href="#intro"><svg class="ic"><use href="#i-sparkles"/></svg>Retrato</a>
+      <ul class="dd mono">
+        <li><a href="#intro">17 y con rumbo</a></li>
+        <li><a href="#stats-intro">Mis cifras</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#linux"><svg class="ic"><use href="#i-terminal"/></svg>Linux</a>
+      <ul class="dd mono">
+        <li><a href="#fetch-card">Mi fastfetch</a></li>
+        <li><a href="#timeline">La ruta de distros</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#hardware"><svg class="ic"><use href="#i-cpu"/></svg>Hardware</a>
+      <ul class="dd mono">
+        <li><a href="#pc-principal">PC principal</a></li>
+        <li><a href="#laptop-hp">Expediente HP 14-cf</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#audio"><svg class="ic"><use href="#i-headphones"/></svg>Audio</a>
+      <ul class="dd mono">
+        <li><a href="#eq-card">Visualizador EQ</a></li>
+        <li><a href="#honores">Honores del oído</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#dias"><svg class="ic"><use href="#i-book"/></svg>Días</a>
+      <ul class="dd mono">
+        <li><a href="#posters">Mi colección de anime</a></li>
+        <li><a href="#skills">Lo que estoy aprendiendo</a></li>
+      </ul>
+    </li>
+  </ul>
+  <button id="burger" aria-label="Abrir menú"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- MENÚ MÓVIL -->
+<div id="mmenu">
+  <button id="cerrar-menu" class="mono">✕ cerrar</button>
+  <div class="mg">
+    <h5 class="kicker mono">Retrato</h5>
+    <a href="#intro">17 y con rumbo</a>
+    <a href="#stats-intro">Mis cifras</a>
+  </div>
+  <div class="mg">
+    <h5 class="kicker mono">Linux</h5>
+    <a href="#fetch-card">Mi fastfetch</a>
+    <a href="#timeline">La ruta de distros</a>
+  </div>
+  <div class="mg">
+    <h5 class="kicker mono">Hardware</h5>
+    <a href="#pc-principal">PC principal</a>
+    <a href="#laptop-hp">Expediente HP 14-cf</a>
+  </div>
+  <div class="mg">
+    <h5 class="kicker mono">Audio</h5>
+    <a href="#eq-card">Visualizador EQ</a>
+    <a href="#honores">Honores del oído</a>
+  </div>
+  <div class="mg">
+    <h5 class="kicker mono">Días</h5>
+    <a href="#posters">Mi colección de anime</a>
+    <a href="#skills">Lo que estoy aprendiendo</a>
+  </div>
+</div>
+
+<div class="hero">
+  <!-- TERMINAL CON TYPEWRITER -->
+  <div class="terminal">
+    <div class="t-bar">
+      <span class="t-dot r"></span><span class="t-dot y"></span><span class="t-dot g"></span>
+      <span class="t-title mono">kitty — zsh</span>
+    </div>
+    <div class="t-body mono" id="t-body"></div>
+  </div>
+
+  <h1>Esto es lo que<br><b>sé de mí</b><span class="cur"></span></h1>
+  <p class="sub">Recuerdos convertidos en biografía: no una ficha de datos, sino mi retrato — escrito como yo mismo lo contaría, píxel a píxel.</p>
+  <div class="scroll-hint mono">scroll<svg class="ic arrow" style="width:1.4rem;height:1.4rem"><use href="#i-zap"/></svg></div>
+</div>
+
+<section id="intro" class="reveal">
+  <div class="kicker"><svg class="ic"><use href="#i-sparkles"/></svg>01 · El retrato</div>
+  <h2>Seventeen, y con rumbo</h2>
+  <p>Tengo <b>17 años</b> y ya sé hacia dónde voy: <b>Ingeniería en Sistemas</b>. Pero más que un destino, lo que define mi forma de ver las cosas es el detalle — no me conformo con "es mejor", quiero saber <i>cuánto mejor</i>: en porcentaje, en FPS, en microdetalles que casi nadie escucha.</p>
+
+  <div class="stats" id="stats-intro">
+    <div class="stat"><div class="n" data-count="17">0</div><div class="l">años de curiosidad</div></div>
+    <div class="stat"><div class="n" data-count="4">0</div><div class="l">distros probadas</div></div>
+    <div class="stat"><div class="n" data-count="20">0</div><div class="l">IEM auditionados por mí</div></div>
+    <div class="stat"><div class="n">∞</div><div class="l">copias de seguridad que hago</div></div>
+  </div>
+</section>
+
+<section id="linux" class="reveal">
+  <div class="kicker"><svg class="ic"><use href="#i-terminal"/></svg>02 · El sistema</div>
+  <h2>La ruta hacia CachyOS</h2>
+  <p>Mientras la mayoría se queda en Windows, yo <b>llegué</b> a Linux. Empecé con Ubuntu, pasé por Zorin, probé Nobara… y al final encontré hogar en <b>CachyOS con Hyprland y Wayland</b>, con un escritorio <b>negro y minimalista</b>: Brave, Kitty, todo pulido.</p>
+
+  <!-- FASTFETCH -->
+  <div class="card fetch" id="fetch-card">
+    <pre class="mono">
+        /\
+       /  \
+      /    \      ~/.memoria/yo
+     /  __  \     --------------
+    /  |  |  \    OS: CachyOS
+   /  _|  |_  \   WM: Hyprland
+  /__/      \__\  Compositor: Wayland
+      /_ _\       Shell: zsh (Kitty)
+       |_|        Núcleo: Serpantium</pre>
+    <div class="fetch-rows mono">
+      <div><span class="fk">WM</span> · Hyprland — sintaxis moderna, siempre</div>
+      <div><span class="fk">Rice</span> · Serpantium — configuración principal</div>
+      <div><span class="fk">Terminal</span> · Kitty</div>
+      <div><span class="fk">Navegador</span> · Brave</div>
+      <div><span class="fk">Tema</span> · negro, minimalista, calmo</div>
+      <div><span class="fk">Ritual</span> · <svg class="ic spec-ic"><use href="#i-harddrive"/></svg>backup antes de tocar configs</div>
+    </div>
+  </div>
+
+  <!-- TIMELINE EXPANDIBLE -->
+  <div class="timeline" id="timeline">
+    <div class="tl-item">
+      <button class="tl-btn"><span class="os">Ubuntu</span><span class="rs">— el primer paso</span><span class="chev mono">▶</span></button>
+      <div class="tl-extra">Mi primera distro: todo comenzó aquí, entre configuraciones que no entendía y la emoción de poder romper cosas.</div>
+    </div>
+    <div class="tl-item">
+      <button class="tl-btn"><span class="os">Zorin</span><span class="rs">— el puente elegante</span><span class="chev mono">▶</span></button>
+      <div class="tl-extra">Me ayudó a sentirme en casa sin soltar la comodidad de Windows. Pero yo ya tenía hambre de algo más mío.</div>
+    </div>
+    <div class="tl-item">
+      <button class="tl-btn"><span class="os">Nobara</span><span class="rs">— el experimento gamer</span><span class="chev mono">▶</span></button>
+      <div class="tl-extra">Perfecta para jugar; aprendí muchísimo de sus parches y de cómo un kernel tuned cambia el día a día.</div>
+    </div>
+    <div class="tl-item">
+      <button class="tl-btn"><span class="os">Niri / iNiR</span> <span class="rs">— el desvío scroll</span><span class="chev mono">▶</span></button>
+      <div class="tl-extra">Probé el scroll de ventanas estilo Wayland: disfruté la idea, restauré mi entorno después. Los experimentos enseñan.</div>
+    </div>
+    <div class="tl-item">
+      <button class="tl-btn"><span class="os">CachyOS + Serpantium</span> <span class="rs">— hogar. Actual.</span><span class="chev mono">▶</span></button>
+      <div class="tl-extra">Optimizado, rápido y a mi gusto: Hyprland, Kitty, Wayland. Todo lo que toco, primero backup. Todo lo que instalo, con intención.</div>
+    </div>
+  </div>
+
+  <p class="hero-line" style="margin-top:1.5rem">Y un interés constante: automatizar tareas con IA y probar herramientas nuevas para Linux.</p>
+</section>
+
+<section id="hardware" class="reveal">
+  <div class="kicker"><svg class="ic"><use href="#i-cpu"/></svg>03 · La máquina</div>
+  <h2>Baliza térmica incluida</h2>
+  <p>Mi torre es una declaración de principios: potencia seria con refrigeración líquida. Y cuando miro laptops, no pido "algo que funcione": pido compatibilidad real con Linux, preferencia AMD, y estimaciones <b>exactas</b> de mejora y FPS en Minecraft con mods y shaders, Geometry Dash y Fortnite.</p>
+
+  <div class="card" id="pc-principal">
+    <div class="kicker" style="margin-bottom:.8rem"><svg class="ic"><use href="#i-monitor"/></svg>PC Principal</div>
+    <table class="specs mono">
+      <tr><td><svg class="ic spec-ic"><use href="#i-cpu"/></svg>CPU</td><td>Ryzen 7 7700X</td></tr>
+      <tr><td><svg class="ic spec-ic"><use href="#i-zap"/></svg>GPU</td><td>RTX 3080</td></tr>
+      <tr><td><svg class="ic spec-ic"><use href="#i-grid"/></svg>RAM</td><td>16 GB DDR5 · doble canal</td></tr>
+      <tr><td><svg class="ic spec-ic"><use href="#i-zap"/></svg>PSU</td><td>850 W · 80+ Bronze</td></tr>
+      <tr><td><svg class="ic spec-ic"><use href="#i-harddrive"/></svg>Almacenamiento</td><td>3 × SSD NVMe de 1 TB</td></tr>
+      <tr><td><svg class="ic spec-ic"><use href="#i-command"/></svg>Refrigeración</td><td>AIO de 360 mm</td></tr>
+    </table>
+  </div>
+
+  <div class="card" id="laptop-hp">
+    <div class="kicker" style="margin-bottom:.8rem"><svg class="ic"><use href="#i-keyboard"/></svg>Expediente HP 14-cf — en busca de reemplazo</div>
+    <table class="specs mono">
+      <tr><td>CPU</td><td>Pentium Gold 6405U</td></tr>
+      <tr><td>RAM</td><td>8 GB DDR4-3200</td></tr>
+      <tr><td>SSD</td><td>NVMe de 256 GB</td></tr>
+      <tr><td>Estado</td><td style="color:var(--accent2)">Sobrevivió con honor. Merece descanso.</td></tr>
+    </table>
+  </div>
+
+  <p>En la lista de deseos: monitores de 24" <svg class="ic" style="color:var(--accent)"><use href="#i-monitor"/></svg> y un <b>AJAZZ AK820</b> mecánico bajo los dedos <svg class="ic" style="color:var(--accent)"><use href="#i-keyboard"/></svg>.</p>
+</section>
+
+<section id="audio" class="reveal">
+  <div class="kicker"><svg class="ic"><use href="#i-headphones"/></svg>04 · El oído</div>
+  <h2>Más de veinte auriculares después</h2>
+  <p>Me considero audiófilo: <b>audio sin pérdida</b>, microdetalles, voces naturales, y una EQ tan sutil que casi parece respeto. Escucho FLAC y corro Qobuz, Tidal y Apple Music vía <b>Waydroid</b> — donde dediqué tiempo real a optimizar la calidad del audio, cosa que pocos hacen.</p>
+
+  <!-- EQ VISUALIZER INTERACTIVO -->
+  <div class="card eq-card">
+    <div class="eq-head">
+      <div class="kicker" style="margin:0"><svg class="ic"><use href="#i-music"/></svg>Salón del oído — haz clic y siente la vibe</div>
+      <button class="play-btn" id="eq-toggle"><svg class="ic" style="width:.9rem;height:.9rem"><use href="#i-pause"/></svg><span>Pausar</span></button>
+    </div>
+    <div class="eq playing" id="eq"></div>
+  </div>
+
+  <div class="card" id="honores">
+    <div class="kicker" style="margin-bottom:.6rem"><svg class="ic"><use href="#i-heart"/></svg>Honores personales</div>
+    <ul class="aud-list mono">
+      <li style="display:flex;justify-content:space-between;padding:.55rem .3rem;border-bottom:1px dashed var(--line)"><span style="color:var(--accent2);font-weight:600">AFUL Explorer</span><span style="color:var(--dim);font-size:.82rem;font-style:italic">favorito</span></li>
+      <li style="display:flex;justify-content:space-between;padding:.55rem .3rem;border-bottom:1px dashed var(--line)"><span style="color:var(--accent2);font-weight:600">Xenns Tea Pro</span><span style="color:var(--dim);font-size:.82rem;font-style:italic">favorito</span></li>
+      <li style="display:flex;justify-content:space-between;padding:.55rem .3rem;border-bottom:1px dashed var(--line)"><span style="color:var(--accent2);font-weight:600">GK Kunten</span><span style="color:var(--dim);font-size:.82rem;font-style:italic">rey del precio/rendimiento</span></li>
+      <li style="display:flex;justify-content:space-between;padding:.55rem .3rem;border-bottom:1px dashed var(--line)"><span>HiBy R4 · HiBy FC1 · KZ AM02</span><span style="color:var(--dim);font-size:.82rem;font-style:italic">cadena de audio</span></li>
+      <li style="display:flex;justify-content:space-between;padding:.55rem .3rem"><span>QCY MeloBuds Pro</span><span style="color:var(--dim);font-size:.82rem;font-style:italic">para movilidad</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="dias" class="reveal">
+  <div class="kicker"><svg class="ic"><use href="#i-sparkles"/></svg>05 · Las cosas pequeñas</div>
+  <h2>Lo que vive entre las sesiones</h2>
+  <p>Mi teléfono principal es un <b>iPhone 11</b> <svg class="ic" style="color:var(--accent)"><use href="#i-smartphone"/></svg> — lo elegí por su tamaño compacto, construcción, cámara e iOS; lo uso para fotos, música y streaming, no para jugar. No abandoné Android del todo: un <b>Galaxy A04</b> con instalación minimalista espera para usos específicos. En el horizonte me llaman los compactos con buena cámara, como la serie <b>Vivo X300</b> <svg class="ic" style="color:var(--accent)"><use href="#i-camera"/></svg>.</p>
+
+  <p>En el anime, mi mundo:</p>
+
+  <!-- POSTERS INTERACTIVOS: portada real + IMDb -->
+  <div class="posters" id="posters">
+    <a class="poster" href="https://www.imdb.com/title/tt2250192/" target="_blank" rel="noopener" title="Sword Art Online — ver en IMDb">
+      <img src="https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx11757-SxYDUzdr9rh2.jpg" alt="Sword Art Online">
+      <div class="p-info"><h4>Sword Art Online</h4><small>IMDb ↗</small></div>
+    </a>
+    <a class="poster" href="https://www.imdb.com/title/tt5311514/" target="_blank" rel="noopener" title="Your Name — ver en IMDb">
+      <img src="https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21519-SUo3ZQuCbYhJ.png" alt="Your Name">
+      <div class="p-info"><h4>Your Name</h4><small>IMDb ↗</small></div>
+    </a>
+    <a class="poster" href="https://www.imdb.com/title/tt21030032/" target="_blank" rel="noopener" title="Oshi no Ko — ver en IMDb">
+      <img src="https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx150672-WqmmwZ4nMzAy.png" alt="Oshi no Ko">
+      <div class="p-info"><h4>Oshi no Ko</h4><small>IMDb ↗</small></div>
+    </a>
+    <a class="poster" href="https://www.imdb.com/title/tt5370118/" target="_blank" rel="noopener" title="KonoSuba — ver en IMDb">
+      <img src="https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx21202-mPOr80AEjUcZ.png" alt="KonoSuba">
+      <div class="p-info"><h4>KonoSuba</h4><small>IMDb ↗</small></div>
+    </a>
+    <a class="poster" href="https://www.imdb.com/title/tt8993398/" target="_blank" rel="noopener" title="Bunny Girl Senpai — ver en IMDb">
+      <img src="https://s4.anilist.co/file/anilistcdn/media/anime/cover/large/bx101291-wfEdgPqtfU0l.jpg" alt="Bunny Girl Senpai">
+      <div class="p-info"><h4>Bunny Girl Senpai</h4><small>IMDb ↗</small></div>
+    </a>
+  </div>
+
+  <p><b>Shiroko</b> es mi personaje favorito, aunque en el escritorio prefiero fondos minimalistas — el anime para la mente, la calma para los ojos.</p>
+
+  <p>Y sigo desarrollando skills que pocas personas de 17 tocan: dibujo estilo anime desde cero con <b>ibisPaint</b> <svg class="ic" style="color:var(--accent2)"><use href="#i-palette"/></svg> — referencias, práctica y todo — y un <b>datapack de Minecraft</b> propio, con mecánicas de vidas limitadas y efectos de muerte hechos a mi medida.</p>
+
+  <div class="chips mono" id="skills">
+    <span class="chip"><svg class="ic"><use href="#i-terminal"/></svg>#linux</span>
+    <span class="chip"><svg class="ic"><use href="#i-grid"/></svg>#hyprland</span>
+    <span class="chip"><svg class="ic"><use href="#i-headphones"/></svg>#audiophile</span>
+    <span class="chip"><svg class="ic"><use href="#i-sparkles"/></svg>#anime</span>
+    <span class="chip"><svg class="ic"><use href="#i-command"/></svg>#minecraft-datapacks</span>
+    <span class="chip"><svg class="ic"><use href="#i-palette"/></svg>#ibisPaint</span>
+    <span class="chip"><svg class="ic"><use href="#i-music"/></svg>#flac</span>
+    <span class="chip"><svg class="ic"><use href="#i-book"/></svg>#dibujo-desde-cero</span>
+  </div>
+</section>
+
+<footer>
+  <p class="mono">cat ~/.memoria/mitad_de_mi.txt | wc -l   →   "la otra mitad aún está por escribirse"</p>
+  <p style="margin-top:.8rem">Y la siguiente línea se escribe todo el tiempo.</p>
+</footer>
+
+<script>
+  /* ---- redirect+progress bar ---- */
+  const bar = document.getElementById("progreso");
+  addEventListener("scroll", () => {
+    const h = document.documentElement;
+    bar.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + "%";
+  });
+
+  /* ---- TYPEWRITER ---- */
+  const tBody = document.getElementById("t-body");
+  const LINES = [
+    { type: "cmd", text: "$ cat ~/.memoria/mitad_de_mi.txt" },
+    { type: "out", text: "> 17 años · Ingeniería en Sistemas" },
+    { type: "out", text: "> CachyOS + Hyprland + Wayland (Serpantium)" },
+    { type: "out", text: "> Ryzen 7 7700X · RTX 3080 · 3×1TB NVMe" },
+    { type: "out", text: "> 20+ IEM auditionados · AFUL Explorer" },
+    { type: "out", text: "> anime, dibujo y datapacks de Minecraft" },
+    { type: "ok",  text: "> [biografía cargada]  ✓" },
+  ];
+
+  (async function tecla() {
+    for (const ln of LINES) {
+      const span = document.createElement("span");
+      span.className = ln.type;
+      span.style.color = ln.type === "cmd" ? "var(--accent)"
+                       : ln.type === "ok"  ? "#7fbf7f"
+                       : "var(--txt)";
+      tBody.appendChild(span);
+      for (let i = 1; i <= ln.text.length; i++) {
+        span.textContent = ln.text.slice(0, i);
+        await new Promise(r => setTimeout(r, 14));
+      }
+      span.textContent = ln.text + (ln.type === "cmd" ? "" : "");
+      const car = document.createElement("span");
+      car.className = "t-careta";
+      tBody.appendChild(car);
+      await new Promise(r => setTimeout(r, ln.type === "cmd" ? 450 : 240));
+      car.remove();
+      tBody.appendChild(document.createElement("br"));
+    }
+    const car = document.createElement("span");
+    car.className = "t-careta";
+    tBody.appendChild(car);
+  })();
+
+  /* ---- EQ VISUALIZER ---- */
+  const eq = document.getElementById("eq");
+  const bars = Array.from({ length: 52 }, () => {
+    const s = document.createElement("span");
+    eq.appendChild(s);
+    return s;
+  });
+  let eqPlaying = true, eqReq;
+
+  function eqStep(t) {
+    bars.forEach((b, i) => {
+      if (!eqPlaying) return;
+      const base = .3 + .25 * Math.sin(t/300 + i * .55);
+      const jitter = Math.random() * .45 + .1;
+      const edge = (i < 6 || i > bars.length - 7) ? .45 : 1;
+      b.style.transform = `scaleY(${Math.max(.08, (base + jitter) * edge)})`;
+    });
+    eqReq = requestAnimationFrame(eqStep);
+  }
+  eqReq = requestAnimationFrame(eqStep);
+
+  const btn = document.getElementById("eq-toggle");
+  btn.onclick = () => {
+    eqPlaying = !eqPlaying;
+    btn.innerHTML = eqPlaying
+      ? '<svg class="ic" style="width:.9rem;height:.9rem"><use href="#i-pause"/></svg><span>Pausar</span>'
+      : '<svg class="ic" style="width:.9rem;height:.9rem"><use href="#i-play"/></svg><span>Reproducir</span>';
+    if (eqPlaying) eqStep(performance.now());
+    else {
+      cancelAnimationFrame(eqReq);
+      bars.forEach(b => b.style.transform = "scaleY(.12)");
+    }
+  };
+  /* hover: levantar barra individual */
+  bars.forEach(b => b.addEventListener("mouseover", () => {
+    if (!eqPlaying) b.style.transform = "scaleY(1)";
+  }));
+
+  /* ---- fastfetch stagger cuando es visible ---- */
+  const fetchIO = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add("visible-v");
+      fetchIO.unobserve(e.target);
+    }
+  }), { threshold: .4 });
+  fetchIO.observe(document.getElementById("fetch-card"));
+
+  /* ---- TIMELINE expandible ---- */
+  document.querySelectorAll(".tl-btn").forEach(b => {
+    b.onclick = () => b.parentElement.classList.toggle("abierto");
+  });
+
+  /* ---- partículas ---- */
+  const canvas = document.getElementById("particles");
+  const ctx = canvas.getContext("2d");
+  let W, H, parts = [];
+  function initParts() {
+    W = canvas.width = innerWidth;
+    H = canvas.height = innerHeight;
+    parts = Array.from({ length: Math.min(70, W/22|0) }, () => ({
+      x: Math.random()*W, y: Math.random()*H,
+      r: Math.random()*1.6+.4,
+      vx: (Math.random()-.5)*.18, vy: -Math.random()*.22-.05,
+      a: Math.random()*.35+.08
+    }));
+  }
+  initParts();
+  addEventListener("resize", initParts);
+  (function tick() {
+    ctx.clearRect(0,0,W,H);
+    for (const p of parts) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.y < -5) { p.y = H+5; p.x = Math.random()*W; }
+      if (p.x < -5) p.x = W+5;
+      if (p.x > W+5) p.x = -5;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(180,200,215,${p.a})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(tick);
+  })();
+
+  /* ---- reveal al scroll ---- */
+  const io = new IntersectionObserver(es => {
+    es.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add("visible"), i * 120);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: .12 });
+  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+  /* ---- count-up ---- */
+  const cio = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target, target = +el.dataset.count, dur = 1200, t0 = performance.now();
+    (function step(t) {
+      const k = Math.min((t - t0) / dur, 1), eased = 1 - Math.pow(1 - k, 3);
+      el.textContent = Math.round(eased * target) + (k === 1 && target === 20 ? "+" : "");
+      if (k < 1) requestAnimationFrame(step);
+    })(t0);
+    cio.unobserve(el);
+  }), { threshold: .6 });
+  document.querySelectorAll(".stat .n[data-count]").forEach(el => cio.observe(el));
+
+  /* ---- BURGER / MENÚ MÓVIL ---- */
+  const burger = document.getElementById("burger");
+  const mmenu  = document.getElementById("mmenu");
+  burger.onclick = () => {
+    const abi = mmenu.classList.toggle("abierto");
+    burger.classList.toggle("abierto", abi);
+    document.body.style.overflow = abi ? "hidden" : "";
+  };
+  document.getElementById("cerrar-menu").onclick = () => {
+    mmenu.classList.remove("abierto");
+    burger.classList.remove("abierto");
+    document.body.style.overflow = "";
+  };
+  mmenu.querySelectorAll("a").forEach(a => a.addEventListener("click", () => {
+    mmenu.classList.remove("abierto");
+    burger.classList.remove("abierto");
+    document.body.style.overflow = "";
+  }));
+
+  /* ---- SCROLLSPY ---- */
+  const spy = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    document.querySelectorAll("nav .topnav > li > a").forEach(a =>
+      a.classList.toggle("activo", a.getAttribute("href") === "#" + e.target.id));
+  }), { rootMargin: "-40% 0px -55% 0px" });
+  document.querySelectorAll("#intro, #linux, #hardware, #audio, #dias").forEach(s => spy.observe(s));
+
+  /* ---- BOTÓN SUBIR ---- */
+  const btt = document.getElementById("btt");
+  addEventListener("scroll", () => btt.classList.toggle("mostrar", scrollY > 600), { passive: true });
+  btt.onclick = () => scrollTo({ top: 0, behavior: "smooth" });
+
+  /* ---- REVEAL CASCADA POR ELEMENTO ---- */
+  const ioItem = new IntersectionObserver(es => es.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add("visible"), i * 90);
+      ioItem.unobserve(e.target);
+    }
+  }), { threshold: .1 });
+  document.querySelectorAll(".card, .stat, .tl-item, .poster").forEach(el => {
+    el.classList.add("r-item");
+    ioItem.observe(el);
+  });
+
+  /* ---- RIPPLE ---- */
+  function ripple(e) {
+    const el = e.currentTarget, r = el.getBoundingClientRect();
+    const s = document.createElement("span");
+    s.className = "ripple";
+    s.style.left = (e.clientX - r.left - 6) + "px";
+    s.style.top  = (e.clientY - r.top - 6) + "px";
+    el.classList.add("ripple-wrap");
+    el.appendChild(s);
+    setTimeout(() => s.remove(), 650);
+  }
+  document.querySelectorAll(".card, .stat, .chip").forEach(el =>
+    el.addEventListener("pointerdown", ripple));
+
+  /* ---- HALO DEL CURSOR ---- */
+  if (matchMedia("(pointer: fine)").matches) {
+    const halo = document.createElement("div");
+    halo.id = "halo";
+    document.body.appendChild(halo);
+    let mx = -100, my = -100, hx = -100, hy = -100;
+    addEventListener("mousemove", e => {
+      mx = e.clientX; my = e.clientY;
+      halo.style.left = mx + "px"; halo.style.top = my + "px";
+      halo.classList.toggle("crecer", !!e.target.closest("a, button, .card, .poster, .stat, .chip"));
+    });
+    (function loop() {
+      hx += (mx - hx) * .16; hy += (my - hy) * .16;
+      halo.style.left = hx + "px"; halo.style.top = hy + "px";
+      requestAnimationFrame(loop);
+    })();
+  }
+</script>
+</body>
+</html>
